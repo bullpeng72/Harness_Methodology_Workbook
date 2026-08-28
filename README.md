@@ -46,5 +46,10 @@ pip install -e ".[dev]" && python eval/run_batch.py  # 실제 Gate 측정
 - [x] S0 준비 — 저장소·버전 고정·가드레일 프로파일·트랙 C v0 (`s0-setup`)
 - [x] S1 관문 1 — PROBLEM/SPEC(ST-001~009,100,101)/GATE_MAP/IRREVERSIBLE, 반려 1회 후 `spec-approved`
 - [x] S2 분석·설계 — FAILURE_MODES(F1–F10), 골든셋 43건 2인 라벨(불일치 11.6%), DESIGN(코드와 1:1)/ADR-001~004, 반려 1회 후 `design-approved`
-- [ ] S3–S7 — v0→v5, Gate 정면돌파, 팀 확장, CI, 배포, RCA
+- [x] S3 v0 + 첫 gate — `@agent_eval` 골든셋 33건 채점 → **FAIL exit 1** (TCR 50%, acc 56%, A 0.53/G 0.52 warn). 실행 중 SDK API 오류 3건 발견·수정. `results/baselines/v0-baseline.json` 커밋. `ch16-end`
+- [ ] S4–S7 — v1 LLM, abtest, CI 회귀 게이트, 팀 확장, 배포, RCA
 - [ ] S8 — 두 트랙 동일 채점, Part XI 비교
+
+> **실측 원칙** (본편 §2⑦): `docs/ITERATIONS.md`의 수치는 전부 실제 `agent-eval` 실행 결과다.
+> 오프라인 스텁 모드라 절대 정확도는 실모델에서 재측정하지만, Gate 통과 여부·회귀 방향·
+> 트랙 비교는 이 모드에서도 유효하다.
