@@ -9,4 +9,6 @@ embed: nomic-embed-text
 seed: 7
 
 # 도구 (본편 §34.4: 착수 시 버전 고정, 업그레이드는 별도 마이그레이션)
-agent_evaluator: 1.0.0rc2
+# ⚠ S3 관찰: lib(anaconda import)와 CLI(pipx)가 갈라져 있다 — 정렬 필요.
+agent_evaluator_lib: 1.0.0-rc3
+agent_evaluator_cli: 1.0.0rc2
