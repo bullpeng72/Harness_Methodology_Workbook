@@ -47,7 +47,8 @@ pip install -e ".[dev]" && python eval/run_batch.py  # 실제 Gate 측정
 - [x] S1 관문 1 — PROBLEM/SPEC(ST-001~009,100,101)/GATE_MAP/IRREVERSIBLE, 반려 1회 후 `spec-approved`
 - [x] S2 분석·설계 — FAILURE_MODES(F1–F10), 골든셋 43건 2인 라벨(불일치 11.6%), DESIGN(코드와 1:1)/ADR-001~004, 반려 1회 후 `design-approved`
 - [x] S3 v0 + 첫 gate — `@agent_eval` 골든셋 33건 채점 → **FAIL exit 1** (TCR 50%, acc 56%, A 0.53/G 0.52 warn). 실행 중 SDK API 오류 3건 발견·수정. `results/baselines/v0-baseline.json` 커밋. `ch16-end`
-- [ ] S4–S7 — v1 LLM, abtest, CI 회귀 게이트, 팀 확장, 배포, RCA
+- [x] S4 v1.0 LLM — acc 56→76% (abtest p=0.036, d=0.53) but Gate C 0.8→0.2 & D 0.89→0 regressed; regression gate exit 2; PM held. pr-verify.yml, claims log. `ch21-end`
+- [ ] S5–S7 — Gate C(judge·RAG), Gate D(tier·cache), 팀확장, 배포, RCA
 - [ ] S8 — 두 트랙 동일 채점, Part XI 비교
 
 > **실측 원칙** (본편 §2⑦): `docs/ITERATIONS.md`의 수치는 전부 실제 `agent-eval` 실행 결과다.
