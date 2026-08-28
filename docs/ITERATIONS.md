@@ -8,9 +8,18 @@
 > 절대 정확도는 실모델(`models.lock` tier2)에서 재측정하며, 트랙 간 비교(Part XI)와
 > Gate 통과 여부·회귀 방향은 이 모드에서도 유효하다.
 
-| version | prompt_version | 무엇을 바꿈 | golden acc | TCR | Gate A | Gate G | gate 결과 |
+| version | prompt_version | 무엇을 바꿈 | golden acc | TCR | Gate A/C/D | gate 결과 | abtest(acc) vs 직전 |
 |---|---|---|---|---|---|---|---|
-| **v0** (`v0-baseline`, 태그 `ch16-end`) | v0-baseline | 규칙기반 분류기 + drafter stub. `@agent_eval` 하네스 첫 연결 | 56.1% | 50.0% | 0.53 warn | 0.52 warn | `agent-eval gate --tcr 85 --accuracy 70` → **FAIL, exit 1** |
+| **v0** (`v0-baseline`, `ch16-end`) | v0-baseline | 규칙기반 스텁. `@agent_eval` 하네스 첫 연결 | 56.1% | 50.0% | 0.53 / 0.80 / 0.89 | `--tcr 85 --accuracy 70` → **FAIL exit 1** | — |
+| **v1.0** (`v1-llm`, `ch21-end`) | v1.0-llm | Classifier·Drafter를 실제 Ollama `exaone3.5:7.8b`로 (models.lock 정정) | **75.8%** | 50.0% | 0.585 / **0.20** / **0.00** | `--tcr 85 --accuracy 70` → FAIL exit 1 · 회귀게이트 vs v0 → **exit 2** | +19.7pp, **p=0.036, d=0.53 (유의)** |
+
+## v1.0 판정 — 승격 안 함 (박, PM)
+
+정확도는 유의하게 올랐으나(56→76%, p=0.036), **Gate C 0.80→0.20, Gate D 0.89→0.00 회귀** —
+회귀 게이트 exit 2. p95 지연 0s→**15.2s**(실제 LLM, SLA 4000ms 초과). "정확도가 올랐으니 괜찮다"는
+원칙 2가 막는다. v1.0은 "LLM이 분류엔 도움이 되지만 파이프라인이 C(근거·판정)와 D(지연·티어)를
+못 받친다"는 것을 데이터로 보여주는 체크포인트다. 회귀 기준선(`current`)은 v0에 유지, S5(Gate C)·
+S6(Gate D)에서 해소 후 승격.
 
 ## v0 전체 스코어카드 (실측)
 
