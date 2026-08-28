@@ -15,6 +15,20 @@
 
 | **v2** (`v2-rag`, `ch27-end`) | v2-rag-s5 | RCA(diagnose)로 C·D 공유원인=SLA 확인 → LLM 호출 축소(고신뢰 리뷰어 스킵/키워드 없으면 escalation LLM 스킵) + 실제 임베딩 RAG(`mxbai-embed-large`) + Gate C Config(hallucination/degradation/fault-tol/idempotency) | **83.3%** (golden_core 18) | 50.0% | 0.615 / **0.597** / 0.011 | `--tcr 85 --accuracy 70` → FAIL exit 1 (acc PASS, TCR FAIL). Gate **G 0.52→1.0**, C **0.20→0.60** | vs v1: 회귀 없음 (`diagnose` → No Gate detected) |
 
+| **v3** (`v3-det`, `ch28-end`) | v3-det-draft | Drafter 결정적화(ADR-005, draft LLM 콜 제거) + classify max_tokens 300→120 + escalation 키워드전용 + Gate D Config | 83.3% (golden_core 18) | 50.0% | 0.605 / **0.757** / **0.570** | `--tcr 85` FAIL (acc PASS). **Gate C PASS, D fail→warn, p95 12.1→3.02s** | vs v2: No Gate detected |
+
+## v3 판정 — SLA/공유원인 해소, 아직 미승격 (박, PM)
+
+**S5 RCA가 지목한 C·D 공유원인(SLA breach)이 해소됐다** — p95 12.1s→**3.02s**(< 4000ms), SLA breach
+100%→~0%. **Gate C 0.60→0.76 (PASS)**, Gate D 0.01→0.57 (fail→warn). `sla_window_penalty`·
+`sla_budget_penalty` 둘 다 0 — D의 남은 gap은 SLA가 아니라 로컬 7.8B 추론의 raw efficiency다
+(`docs/LIMITS.md` L1). 절대 게이트는 여전히 TCR 50%로 FAIL (`LIMITS.md` L2 — category·priority
+동시 정답률, S7/Ch 25에서).
+
+**`current` 기준선을 v0 → v3 로 advance** — v0는 스텁이라 실LLM 버전과의 회귀 비교가 노이즈
+("p95 0s→4s = 800000% 회귀"). v3부터 의미 있는 회귀 추적. v3가 절대 게이트를 통과한 건 아니지만
+"현재 최선"으로 삼는다.
+
 ## v2 판정 — 승격 안 함, 진전 (박, PM)
 
 v1의 Gate C 회귀를 되돌렸다(0.20→0.60) — `graceful_degradation` 0.98·`idempotency` 1.0가 측정됐고,
