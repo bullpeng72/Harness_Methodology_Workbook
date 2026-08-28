@@ -43,8 +43,8 @@ pip install -e ".[dev]" && python eval/run_batch.py  # 실제 Gate 측정
 
 ## 진행 상태 (S1 종료)
 
-- [x] S0 준비 — 저장소·버전 고정·가드레일 프로파일·트랙 C v0
+- [x] S0 준비 — 저장소·버전 고정·가드레일 프로파일·트랙 C v0 (`s0-setup`)
 - [x] S1 관문 1 — PROBLEM/SPEC(ST-001~009,100,101)/GATE_MAP/IRREVERSIBLE, 반려 1회 후 `spec-approved`
-- [ ] S2 분석·설계 — FAILURE_MODES, 골든셋 2인 라벨, DESIGN/ADR, 관문 2
+- [x] S2 분석·설계 — FAILURE_MODES(F1–F10), 골든셋 43건 2인 라벨(불일치 11.6%), DESIGN(코드와 1:1)/ADR-001~004, 반려 1회 후 `design-approved`
 - [ ] S3–S7 — v0→v5, Gate 정면돌파, 팀 확장, CI, 배포, RCA
 - [ ] S8 — 두 트랙 동일 채점, Part XI 비교
