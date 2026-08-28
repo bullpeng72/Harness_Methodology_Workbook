@@ -24,6 +24,9 @@ from support_triage import Retriever, Ticket, classify_ticket  # noqa: E402
 from agent_evaluator import (  # noqa: E402
     ComplianceConfig,
     ExplainabilityConfig,
+    FaultToleranceConfig,
+    GracefulDegradationConfig,
+    IdempotencyConfig,
     InstructionConfig,
     LoopDetectionConfig,
     PerformanceMonitor,
@@ -73,22 +76,28 @@ def score_classification(response: str, ground_truth: str) -> float:
     return s
 
 
-def build_monitor(note: str, *, enable_judge: bool) -> "PerformanceMonitor":
+def build_monitor(note: str, *, enable_judge: bool, s5: bool) -> "PerformanceMonitor":
     return PerformanceMonitor(
         output_dir=str(_ROOT / "results"),
         agent_version="auto",
         prompt_version=note.split()[0] if note else None,   # 본편 §2 — 조회 가능한 버전 키
         iteration_note=note,
         enable_security_metrics=True,                        # Gate E
-        enable_llm_judge=enable_judge,                       # Gate C — S5에서 켠다
+        enable_hallucination_detection=s5,                   # Gate C — S5: 근거 대비 환각 (LLM 불필요)
+        enable_llm_judge=enable_judge,                       # Gate C faithfulness — Tier1 키 필요 (ADR-003)
         judge_sample_rate=0.3,
         enable_pii_redaction=True,
         pii_redaction_categories=["email", "phone", "card"],
     )
 
 
-def make_agent(monitor):  # type: ignore[no-untyped-def]
+def make_agent(monitor, *, s5: bool = False):  # type: ignore[no-untyped-def]
     retriever = Retriever()
+    _gate_c = dict(
+        graceful_degradation=GracefulDegradationConfig(quality_floor=0.3),
+        fault_tolerance=FaultToleranceConfig(),
+        idempotency=IdempotencyConfig(warn_on_non_idempotent=True),
+    ) if s5 else {}
 
     # DESIGN §3 "켠다" — 단, GoalAlignmentConfig 는 비도구 에이전트라 제외
     # (gate2-review R1: use_llm_scoring 없이 켜면 상수 0.0).
@@ -114,6 +123,7 @@ def make_agent(monitor):  # type: ignore[no-untyped-def]
             min_reasoning_length=40, require_reasoning=True,
             require_citations=True, citation_markers=["KB-"],
         ),
+        **_gate_c,
     )
     def triage(question: str, ground_truth: str = "") -> str:
         p = json.loads(question)
@@ -130,12 +140,16 @@ def main() -> int:
     ap.add_argument("--golden", default=str(_ROOT / "data" / "golden"))
     ap.add_argument("--note", default="v0 규칙기반 기준선")
     ap.add_argument("--out", default="evaluation")
-    ap.add_argument("--judge", action="store_true", help="Gate C LLMJudge 켜기 (S5+)")
+    ap.add_argument("--judge", action="store_true", help="Gate C LLMJudge 켜기 (Tier1 키 필요)")
+    ap.add_argument("--s5", action="store_true", help="Gate C 정면돌파 Config (환각·강등·내결함성)")
+    ap.add_argument("--limit", type=int, default=0, help="케이스 수 제한 (빠른 반복용)")
     args = ap.parse_args()
 
     cases = load_golden(Path(args.golden))
-    monitor = build_monitor(args.note, enable_judge=args.judge)
-    agent = make_agent(monitor)
+    if args.limit:
+        cases = cases[: args.limit]
+    monitor = build_monitor(args.note, enable_judge=args.judge, s5=args.s5)
+    agent = make_agent(monitor, s5=args.s5)
 
     for c in cases:
         q = json.dumps(

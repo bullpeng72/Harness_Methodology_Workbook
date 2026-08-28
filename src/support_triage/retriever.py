@@ -7,13 +7,50 @@ Ch 28: 임베딩은 빌드 타임에 계산해 ``data/kb/index.json`` 에 저장
 from __future__ import annotations
 
 import json
+import math
+import os
 import re
+import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
 _KB_DIR = Path(__file__).resolve().parents[2] / "data" / "kb"
 _INDEX = _KB_DIR / "index.json"
 _TOP_K = 4  # Ch 39 RCA 이후 5 → 4
+_LOCK = Path(__file__).resolve().parents[2] / "models.lock"
+
+
+def _embed_model() -> str:
+    if _LOCK.exists():
+        for line in _LOCK.read_text(encoding="utf-8").splitlines():
+            if line.strip().startswith("embed:"):
+                return line.split(":", 1)[1].strip()
+    return ""
+
+
+def _embed(text: str) -> list[float] | None:
+    """쿼리 임베딩 (Ollama). 실패하면 None → shingle 폴백."""
+    model = _embed_model()
+    if not model or os.getenv("SUPPORT_TRIAGE_OFFLINE") == "1":
+        return None
+    host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+    try:
+        req = urllib.request.Request(
+            f"{host}/api/embeddings",
+            data=json.dumps({"model": model, "prompt": text}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=20) as r:  # noqa: S310 — 로컬
+            return json.loads(r.read()).get("embedding")
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _cos(a: list[float], b: list[float]) -> float:
+    dot = sum(x * y for x, y in zip(a, b))
+    na = math.sqrt(sum(x * x for x in a)) or 1.0
+    nb = math.sqrt(sum(y * y for y in b)) or 1.0
+    return dot / (na * nb)
 
 
 @dataclass(frozen=True)
@@ -75,12 +112,23 @@ class Retriever:
             점수는 0~1 정규화된 근사값이다. 호출자(Drafter)는
             ``types.GROUNDING_THRESHOLD`` 와 비교해 "근거 없음" 여부를 판정한다.
         """
+        # 1순위: 임베딩 (index.json 에 embedding 필드가 있고 쿼리 임베딩 성공 시)
+        if self._docs and "embedding" in self._docs[0]:
+            qv = _embed(query)
+            if qv is not None:
+                scored = [
+                    Passage(d["kb_id"], d["title"], d["text"], round(_cos(qv, d["embedding"]), 4))
+                    for d in self._docs
+                ]
+                scored.sort(key=lambda p: p.score, reverse=True)
+                return scored[: self.top_k]
+
+        # 폴백: 문자 2-gram 커버리지 (오프라인 재현 경로)
         q = _shingles(query)
-        scored: list[Passage] = []
+        scored = []
         for d in self._docs:
             doc_sh = _shingles(d["title"] + " " + d["text"])
             title_sh = _shingles(d["title"])
-            # (a) 쿼리가 문서에 얼마나 덮이나  (b) 문서 제목 키워드가 쿼리에 얼마나 나타나나
             score = max(_coverage(q, doc_sh), _coverage(title_sh, q))
             scored.append(Passage(d["kb_id"], d["title"], d["text"], round(score, 4)))
         scored.sort(key=lambda p: p.score, reverse=True)

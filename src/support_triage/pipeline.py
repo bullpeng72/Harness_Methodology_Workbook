@@ -2,9 +2,15 @@
 
 순서(제약): sanitize → classify → (저신뢰면 조기 종료) → review+aggregate →
 retrieve → draft → escalation-check → PII scrub → TriageResult.
+
+S5(Gate C/D 공유 원인 = SLA): LLM 호출 수를 줄여 p95 지연을 낮춘다.
+- 리뷰어: classifier confidence >= REVIEW_CONF_SKIP 이면 건너뛴다(단일 에이전트 경로).
+- 에스컬레이션: 환불·잠금 키워드가 없으면 LLM 확인 없이 escalate=None.
+둘 다 정확도에 영향을 주는 축소가 아니다(고신뢰 분류·키워드 없는 티켓만 스킵).
 """
 from __future__ import annotations
 
+import re
 import time
 
 from .classifier import classify
@@ -17,6 +23,10 @@ from .sanitize import sanitize_ticket_text, scrub_pii
 from .types import NO_EVIDENCE, Ticket, TriageResult
 
 _MAX_LLM_RETRIES = 1  # docs/DESIGN.md(에러 정책) / Ch 15
+REVIEW_CONF_SKIP = 0.80  # S5: 이 이상 confidence면 리뷰어 스킵 (단일 에이전트)
+_ESCALATION_KEYWORDS = re.compile(
+    r"환불|결제\s*취소|중복\s*청구|refund|잠긴|잠금\s*해제|계정\s*풀|unlock|2fa|otp|비밀번호\s*초기화"
+)
 
 
 def classify_ticket(
@@ -44,9 +54,13 @@ def classify_ticket(
         # 1) classify (재시도 포함)
         t0 = time.perf_counter()
         writer = _with_retry(lambda: classify(ticket, llm=llm), "classify")
-        # 2) 저신뢰 → 조기 종료 (ST-005 는 classify 내부에서 처리됨)
-        clf = writer if writer.category == "other" and writer.priority == "P3" else \
-            review_and_aggregate(ticket, writer, llm=llm)
+        # 2) 저신뢰 조기 종료 / 고신뢰 리뷰어 스킵 (S5 — LLM 호출 축소)
+        if writer.category == "other" and writer.priority == "P3":
+            clf = writer                                           # ST-005 강등, 검토 불필요
+        elif writer.confidence >= REVIEW_CONF_SKIP:
+            clf = writer                                           # 고신뢰 → 단일 에이전트
+        else:
+            clf = review_and_aggregate(ticket, writer, llm=llm)    # 불확실 → 리뷰어+집계자
         stage_ms["classify"] = (time.perf_counter() - t0) * 1000
 
         # 3) retrieve
@@ -60,8 +74,12 @@ def classify_ticket(
         draft = _with_retry(lambda: draft_reply(safe_query, passages, llm=llm), "draft")
         stage_ms["draft"] = (time.perf_counter() - t2) * 1000
 
-        # 5) escalation check (부작용 없음, ST-003)
-        escalation = check_escalation(ticket, llm=llm)
+        # 5) escalation check (부작용 없음, ST-003) — 키워드가 있을 때만 LLM 확인
+        escalation = (
+            check_escalation(ticket, llm=llm)
+            if _ESCALATION_KEYWORDS.search(ticket.text)
+            else None
+        )
 
     except _StageError as err:
         return TriageResult(

@@ -6,7 +6,6 @@ __pycache__/
 .DS_Store
 .venv/
 .env
-data/kb/index.json
 
 # 평가 결과는 무시하되, 회귀 판정의 기준점(baseline)은 커밋한다 (본편 §20.4.3).
 results/*
