@@ -1,0 +1,18 @@
+{
+  "tcr": 50.0,
+  "accuracy": 83.33,
+  "p95_latency": 12.1013,
+  "hallucination": 0.0,
+  "llm_judge_overall": null,
+  "total_cost": 0.1031,
+  "gate_scores": {
+    "A": 0.6153,
+    "B": 1.0,
+    "C": 0.5967,
+    "D": 0.0105,
+    "E": 1.0,
+    "F": null,
+    "G": 1.0
+  },
+  "saved_at": "2026-08-28T05:04:01.077637+00:00"
+}

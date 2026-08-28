@@ -13,6 +13,16 @@
 | **v0** (`v0-baseline`, `ch16-end`) | v0-baseline | 규칙기반 스텁. `@agent_eval` 하네스 첫 연결 | 56.1% | 50.0% | 0.53 / 0.80 / 0.89 | `--tcr 85 --accuracy 70` → **FAIL exit 1** | — |
 | **v1.0** (`v1-llm`, `ch21-end`) | v1.0-llm | Classifier·Drafter를 실제 Ollama `exaone3.5:7.8b`로 (models.lock 정정) | **75.8%** | 50.0% | 0.585 / **0.20** / **0.00** | `--tcr 85 --accuracy 70` → FAIL exit 1 · 회귀게이트 vs v0 → **exit 2** | +19.7pp, **p=0.036, d=0.53 (유의)** |
 
+| **v2** (`v2-rag`, `ch27-end`) | v2-rag-s5 | RCA(diagnose)로 C·D 공유원인=SLA 확인 → LLM 호출 축소(고신뢰 리뷰어 스킵/키워드 없으면 escalation LLM 스킵) + 실제 임베딩 RAG(`mxbai-embed-large`) + Gate C Config(hallucination/degradation/fault-tol/idempotency) | **83.3%** (golden_core 18) | 50.0% | 0.615 / **0.597** / 0.011 | `--tcr 85 --accuracy 70` → FAIL exit 1 (acc PASS, TCR FAIL). Gate **G 0.52→1.0**, C **0.20→0.60** | vs v1: 회귀 없음 (`diagnose` → No Gate detected) |
+
+## v2 판정 — 승격 안 함, 진전 (박, PM)
+
+v1의 Gate C 회귀를 되돌렸다(0.20→0.60) — `graceful_degradation` 0.98·`idempotency` 1.0가 측정됐고,
+LLM 호출 축소로 p95 15.2s→12.1s. **Gate G는 0.52→1.0** (실제 reasoning + KB 인용). 하지만
+C·D는 여전히 v0(0.80/0.89) 아래 — **SLA breach 100%(p95 12.1s ≫ 4000ms)가 C의 상한을 누르고
+D를 fail시킨다.** 이건 C·D 공유 원인이고, D는 아직 안 고쳤다(S6). `current` 기준선은 v0 유지.
+faithfulness(LLMJudge)는 Tier1 키 없어 미측정 — 키 확보 시 재측정.
+
 ## v1.0 판정 — 승격 안 함 (박, PM)
 
 정확도는 유의하게 올랐으나(56→76%, p=0.036), **Gate C 0.80→0.20, Gate D 0.89→0.00 회귀** —
