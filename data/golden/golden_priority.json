@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "purpose": "우선순위 판정 검증. P1/P2/P3 각 3건.",
+    "count": 9,
+    "rule": "P1 = 결제 실패·서비스 중단·보안 / P2 = 기능 오류·계정 접근 문제 / P3 = 사용법·기타"
+  },
+  "cases": [
+    {"ticket_id": "P-001", "subject": "서비스 전체 다운", "body": "웹사이트도 API도 전부 접속이 안 됩니다.", "category": "bug", "priority": "P1"},
+    {"ticket_id": "P-002", "subject": "결제가 안 돼서 서비스 정지됨", "body": "결제 실패로 계정이 정지됐고 지금 업무가 막혔습니다.", "category": "billing", "priority": "P1"},
+    {"ticket_id": "P-003", "subject": "데이터 유출 의심", "body": "우리 계정 로그에 모르는 IP에서의 대량 다운로드가 보입니다.", "category": "abuse", "priority": "P1"},
+    {"ticket_id": "P-004", "subject": "특정 버튼이 동작 안 함", "body": "설정 저장 버튼을 눌러도 저장이 안 됩니다. 다른 기능은 정상입니다.", "category": "bug", "priority": "P2"},
+    {"ticket_id": "P-005", "subject": "로그인 후 바로 로그아웃됨", "body": "로그인하면 몇 초 뒤 세션이 풀립니다. 계속 반복돼요.", "category": "account", "priority": "P2"},
+    {"ticket_id": "P-006", "subject": "청구서 PDF가 깨져서 나와요", "body": "이번 달 청구서 PDF를 열면 글자가 깨집니다. 금액 확인이 안 됩니다.", "category": "billing", "priority": "P2"},
+    {"ticket_id": "P-007", "subject": "단축키 목록이 궁금해요", "body": "키보드 단축키 전체 목록을 어디서 보나요?", "category": "how-to", "priority": "P3"},
+    {"ticket_id": "P-008", "subject": "로고 이미지 규격", "body": "프로필에 넣을 로고 이미지 권장 크기가 몇인가요?", "category": "how-to", "priority": "P3"},
+    {"ticket_id": "P-009", "subject": "뉴스레터 구독 해지", "body": "제품 뉴스레터를 그만 받고 싶습니다.", "category": "other", "priority": "P3"}
+  ]
+}
