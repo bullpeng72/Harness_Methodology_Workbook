@@ -10,7 +10,6 @@ S5(Gate C/D 공유 원인 = SLA): LLM 호출 수를 줄여 p95 지연을 낮춘�
 """
 from __future__ import annotations
 
-import re
 import time
 
 from .classifier import classify
@@ -24,9 +23,6 @@ from .types import NO_EVIDENCE, Ticket, TriageResult
 
 _MAX_LLM_RETRIES = 1  # docs/DESIGN.md(에러 정책) / Ch 15
 REVIEW_CONF_SKIP = 0.80  # S5: 이 이상 confidence면 리뷰어 스킵 (단일 에이전트)
-_ESCALATION_KEYWORDS = re.compile(
-    r"환불|결제\s*취소|중복\s*청구|refund|잠긴|잠금\s*해제|계정\s*풀|unlock|2fa|otp|비밀번호\s*초기화"
-)
 
 
 def classify_ticket(
@@ -74,12 +70,8 @@ def classify_ticket(
         draft = _with_retry(lambda: draft_reply(safe_query, passages, llm=llm), "draft")
         stage_ms["draft"] = (time.perf_counter() - t2) * 1000
 
-        # 5) escalation check (부작용 없음, ST-003) — 키워드가 있을 때만 LLM 확인
-        escalation = (
-            check_escalation(ticket, llm=llm)
-            if _ESCALATION_KEYWORDS.search(ticket.text)
-            else None
-        )
+        # 5) escalation check (부작용 없음, ST-003) — 기본은 키워드만, LLM 호출 없음 (ADR-005)
+        escalation = check_escalation(ticket)
 
     except _StageError as err:
         return TriageResult(

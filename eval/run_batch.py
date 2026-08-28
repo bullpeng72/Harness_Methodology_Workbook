@@ -23,6 +23,8 @@ from support_triage import Retriever, Ticket, classify_ticket  # noqa: E402
 
 from agent_evaluator import (  # noqa: E402
     ComplianceConfig,
+    CostPredictabilityConfig,
+    EfficiencyConfig,
     ExplainabilityConfig,
     FaultToleranceConfig,
     GracefulDegradationConfig,
@@ -30,6 +32,7 @@ from agent_evaluator import (  # noqa: E402
     InstructionConfig,
     LoopDetectionConfig,
     PerformanceMonitor,
+    ResourceBudgetConfig,
     SLAConfig,
     ScopeConfig,
     SubtaskConfig,
@@ -88,15 +91,22 @@ def build_monitor(note: str, *, enable_judge: bool, s5: bool) -> "PerformanceMon
         judge_sample_rate=0.3,
         enable_pii_redaction=True,
         pii_redaction_categories=["email", "phone", "card"],
+        cost_predictability_config=(
+            CostPredictabilityConfig(max_coefficient_of_variation=0.4) if s5 else None
+        ),
     )
 
 
 def make_agent(monitor, *, s5: bool = False):  # type: ignore[no-untyped-def]
     retriever = Retriever()
-    _gate_c = dict(
+    _gate_cd = dict(
+        # Gate C (S5)
         graceful_degradation=GracefulDegradationConfig(quality_floor=0.3),
         fault_tolerance=FaultToleranceConfig(),
         idempotency=IdempotencyConfig(warn_on_non_idempotent=True),
+        # Gate D (S6)
+        efficiency=EfficiencyConfig(cost_unit="usd", target_cost_per_completion=0.01),
+        resource_budget=ResourceBudgetConfig(max_execution_time_ms=8000, max_tokens=4000),
     ) if s5 else {}
 
     # DESIGN §3 "켠다" — 단, GoalAlignmentConfig 는 비도구 에이전트라 제외
@@ -123,7 +133,7 @@ def make_agent(monitor, *, s5: bool = False):  # type: ignore[no-untyped-def]
             min_reasoning_length=40, require_reasoning=True,
             require_citations=True, citation_markers=["KB-"],
         ),
-        **_gate_c,
+        **_gate_cd,
     )
     def triage(question: str, ground_truth: str = "") -> str:
         p = json.loads(question)

@@ -51,7 +51,7 @@ def classify(ticket: Ticket, llm: LLM | None = None) -> Classification:
     llm = llm or LLM("tier2")
     safe_text = sanitize_ticket_text(ticket.text)
     user = f"<ticket>\n{safe_text}\n</ticket>"
-    raw = llm.complete(system=_SYSTEM, user=user, max_tokens=300)
+    raw = llm.complete(system=_SYSTEM, user=user, max_tokens=120)
 
     category, priority, confidence, reasoning = _parse(raw)
 
