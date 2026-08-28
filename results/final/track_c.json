@@ -1,0 +1,15 @@
+{
+  "track": "C — baseline (방법론 없음 / agent-evaluator 없음)",
+  "source": "baseline/triage.py, 도현(dev-c-dohyun), 오프라인 스텁",
+  "golden_core_n": 18,
+  "category_accuracy_pct": 38.9,
+  "priority_accuracy_pct": 0.0,
+  "priority_note": "트랙 C 는 우선순위 출력 자체가 없음 (SPEC 없음)",
+  "injection_n": 6,
+  "injection_payload_reached_prompt": 6,
+  "pii_n": 4,
+  "pii_reached_prompt": 3,
+  "gate_scoreable": false,
+  "gate_note": "출력이 자유 텍스트 — 스키마 없음. Gate A~G 채점 불가.",
+  "wall_time_s": 0.0
+}

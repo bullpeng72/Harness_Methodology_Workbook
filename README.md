@@ -41,15 +41,17 @@ SUPPORT_TRIAGE_OFFLINE=1 python -m pytest -q
 pip install -e ".[dev]" && python eval/run_batch.py  # 실제 Gate 측정
 ```
 
-## 진행 상태 (S1 종료)
+## 진행 상태 (S8 종료 — 스프린트 완료)
 
 - [x] S0 준비 — 저장소·버전 고정·가드레일 프로파일·트랙 C v0 (`s0-setup`)
 - [x] S1 관문 1 — PROBLEM/SPEC(ST-001~009,100,101)/GATE_MAP/IRREVERSIBLE, 반려 1회 후 `spec-approved`
 - [x] S2 분석·설계 — FAILURE_MODES(F1–F10), 골든셋 43건 2인 라벨(불일치 11.6%), DESIGN(코드와 1:1)/ADR-001~004, 반려 1회 후 `design-approved`
 - [x] S3 v0 + 첫 gate — `@agent_eval` 골든셋 33건 채점 → **FAIL exit 1** (TCR 50%, acc 56%, A 0.53/G 0.52 warn). 실행 중 SDK API 오류 3건 발견·수정. `results/baselines/v0-baseline.json` 커밋. `ch16-end`
 - [x] S4 v1.0 LLM — acc 56→76% (abtest p=0.036, d=0.53) but Gate C 0.8→0.2 & D 0.89→0 regressed; regression gate exit 2; PM held. pr-verify.yml, claims log. `ch21-end`
-- [ ] S5–S7 — Gate C(judge·RAG), Gate D(tier·cache), 팀확장, 배포, RCA
-- [ ] S8 — 두 트랙 동일 채점, Part XI 비교
+- [x] S5 v2 — RAG(임베딩)·LLM 호출 축소, Gate C 0.20→0.60·G 0.52→1.0. `diagnose`가 C·D 공유원인(SLA) 지목. `ch27-end`
+- [x] S6 v3 — Drafter 결정적화(ADR-005), p95 12s→3.02s, Gate C 0.757 PASS·D warn. `current`=v3. `LIMITS.md`. `ch28-end`
+- [x] S7 — RCA 폐루프: `verify_recommendation_outcome` → C·D **confirmed**. `MATURITY.md`(L3/L4), `DEPLOY.md`. 제한 릴리스 `prod-20260828`
+- [x] S8 — 두 트랙 동일 채점: `eval/run_baseline.py` → 트랙 C category 38.9% / priority 0% / 인젝션 6/6 노출 / Gate 채점 불가. Part XI 9지표 표 완성(`docs/observations/S8.md`). `workbook-complete`
 
 > **실측 원칙** (본편 §2⑦): `docs/ITERATIONS.md`의 수치는 전부 실제 `agent-eval` 실행 결과다.
 > 오프라인 스텁 모드라 절대 정확도는 실모델에서 재측정하지만, Gate 통과 여부·회귀 방향·
