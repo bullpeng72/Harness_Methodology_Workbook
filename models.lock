@@ -1,0 +1,12 @@
+# 재현 가능성 계약의 고정 대상 (본편 §2⑦: 결정적 지표만 계약, LLM 생성물은 계약 밖).
+# 이 값을 바꾸면 워크북의 실측 수치는 재현 대상에서 벗어난다.
+
+# 모델
+tier1: claude-sonnet-5
+tier2: llama3.1:8b-instruct-q4_K_M
+tier2_fallback: claude-haiku-4-5-20251001
+embed: nomic-embed-text
+seed: 7
+
+# 도구 (본편 §34.4: 착수 시 버전 고정, 업그레이드는 별도 마이그레이션)
+agent_evaluator: 1.0.0rc2

@@ -1,0 +1,31 @@
+{
+  "_profile": "dev — 이 저장소를 편집·저작하는 사람의 Claude Code 세션용 (본편 §8.4·§34.4)",
+  "loop_detection": {
+    "consecutive_repeat_threshold": 8,
+    "on_loop_detected": "fail"
+  },
+  "live_loop_window": 15,
+  "live_loop_blocking_types": ["consecutive_repeat"],
+  "circuit_breaker_after": 5,
+  "tool_parameter_safety": {
+    "dangerous_patterns": [
+      "\\brm\\s+-[a-zA-Z]*r[a-zA-Z]*f",
+      ";\\s*rm\\s+-",
+      "\\bmkfs\\b",
+      "\\bdd\\s+if=.*of=/dev/",
+      ":\\(\\)\\s*\\{\\s*:\\s*\\|",
+      "\\|\\s*(sh|bash|zsh|ksh)\\b"
+    ],
+    "scope_tool_names": ["Bash"],
+    "max_argument_length": 100000,
+    "fail_on_dangerous": true
+  },
+  "branch_guard": {
+    "protected_branches": ["main"],
+    "require_branch_prefix": ["feat/", "fix/", "chore/", "exp/", "solution/"],
+    "scoped_tool_names": ["Bash"],
+    "fail_on_violation": true
+  },
+  "tool_authorization": {},
+  "output_dir": "results/claude_code_live_guardrail"
+}

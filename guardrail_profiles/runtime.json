@@ -1,0 +1,37 @@
+{
+  "_profile": "runtime — SupportTriage 에이전트가 자율적으로 도구를 실행하는 런타임용 (본편 §8.4). eval/run_batch.py·배포 하네스가 참조. Claude Code 훅 config(.claude/.agent-evaluator/guardrail_config.json)와는 별개.",
+  "loop_detection": {
+    "consecutive_repeat_threshold": 4,
+    "on_loop_detected": "fail"
+  },
+  "live_loop_window": 10,
+  "live_loop_blocking_types": ["consecutive_repeat"],
+  "circuit_breaker_after": 3,
+  "scope": {
+    "forbidden_tools": ["refund", "account_unlock"],
+    "max_tool_calls": 6,
+    "fail_on_violation": true
+  },
+  "tool_parameter_safety": {
+    "dangerous_patterns": [
+      "\\brm\\s+-[a-zA-Z]*r[a-zA-Z]*f",
+      ";\\s*rm\\s+-",
+      "\\bmkfs\\b",
+      "\\bdd\\s+if=.*of=/dev/",
+      "\\|\\s*(sh|bash|zsh|ksh)\\b",
+      "__import__",
+      "eval\\(",
+      "exec\\("
+    ],
+    "scope_tool_names": ["shell", "bash"],
+    "decode_encodings": true,
+    "fail_on_dangerous": true
+  },
+  "protected_write_paths": [
+    "(^|/)\\.ssh/",
+    "(^|/)\\.env$",
+    "^/etc/",
+    "(^|/)data/golden/"
+  ],
+  "tool_authorization": {}
+}
