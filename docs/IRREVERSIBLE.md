@@ -16,3 +16,7 @@
 ## 변경 이력
 
 - 2026-08-28 — 최초 작성 (관문 1). 승인: 박.
+- 2026-08-28 (S4) — `models.lock`의 `tier2` `llama3.1:8b-instruct-q4_K_M` → `exaone3.5:7.8b`,
+  `embed` `nomic-embed-text` → `mxbai-embed-large:latest`. 사유: 이전 핀은 로컬 미설치
+  플레이스홀더였음(재현 불가). 현재 Ollama에 실재하는 모델로 정정. 이후 이 두 값이 재현 기준.
+  승인: 박 (PM). 이전 `evaluation.json`(v0)은 오프라인 스텁이라 이 변경의 영향 없음.
