@@ -40,7 +40,7 @@ def _embed(text: str) -> list[float] | None:
             data=json.dumps({"model": model, "prompt": text}).encode("utf-8"),
             headers={"Content-Type": "application/json"},
         )
-        with urllib.request.urlopen(req, timeout=20) as r:  # noqa: S310 — 로컬
+        with urllib.request.urlopen(req, timeout=20) as r:
             return json.loads(r.read()).get("embedding")
     except Exception:  # noqa: BLE001
         return None

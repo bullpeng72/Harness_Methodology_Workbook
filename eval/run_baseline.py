@@ -21,7 +21,7 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_ROOT))
 
-import baseline.triage as C  # noqa: E402
+import baseline.triage as C
 
 _C_MAP = {"complaint": "billing", "question": "how-to", "other": "other"}
 _C_CAT_RE = re.compile(r"^\[(\w+)\]")

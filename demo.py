@@ -17,7 +17,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
-from support_triage import Retriever, Ticket, classify_ticket  # noqa: E402
+from support_triage import Retriever, Ticket, classify_ticket
 
 
 def main() -> None:

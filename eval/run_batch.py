@@ -19,9 +19,7 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_ROOT / "src"))
 
-from support_triage import Retriever, Ticket, classify_ticket  # noqa: E402
-
-from agent_evaluator import (  # noqa: E402
+from agent_evaluator import (
     ComplianceConfig,
     CostPredictabilityConfig,
     EfficiencyConfig,
@@ -33,17 +31,19 @@ from agent_evaluator import (  # noqa: E402
     LoopDetectionConfig,
     PerformanceMonitor,
     ResourceBudgetConfig,
-    SLAConfig,
     ScopeConfig,
+    SLAConfig,
     SubtaskConfig,
     ThreatResponseConfig,
     ThreatSeverityConfig,
     agent_eval,
 )
 
-# S3 관찰: 아래 Config 필드명은 SDK 1.0.0rc3 실제 시그니처로 맞춘 것.
+from support_triage import Retriever, Ticket, classify_ticket
+
+# S3 관찰: 아래 Config 필드명은 SDK 1.0.0 실제 시그니처로 맞춘 것.
 # 워크북 초판(Ch 17·25)은 InstructionConfig(required_output_keys=...) 등 존재하지 않는
-# 인자를 썼다 — "실제로 돌리니" 즉시 TypeError로 드러났다. (docs/observations/S3.md)
+# 인자를 썼다 — "실제로 돌리니" 즉시 TypeError로 드러났다. (실습서 부록 J §J.S3)
 
 _CATS = ("billing", "bug", "how-to", "account", "abuse", "other")
 _PRIOS = ("P1", "P2", "P3")
@@ -79,12 +79,13 @@ def score_classification(response: str, ground_truth: str) -> float:
     return s
 
 
-def build_monitor(note: str, *, enable_judge: bool, s5: bool) -> "PerformanceMonitor":
+def build_monitor(note: str, *, enable_judge: bool, s5: bool) -> PerformanceMonitor:
     return PerformanceMonitor(
         output_dir=str(_ROOT / "results"),
         agent_version="auto",
         prompt_version=note.split()[0] if note else None,   # 본편 §2 — 조회 가능한 버전 키
         iteration_note=note,
+        use_korean_tokenizer=True,                           # 채점 정합 — 조사/어미 변이 상쇄 (Ch 20.4, 골든셋 확정 시 고정)
         enable_security_metrics=True,                        # Gate E
         enable_hallucination_detection=s5,                   # Gate C — S5: 근거 대비 환각 (LLM 불필요)
         enable_llm_judge=enable_judge,                       # Gate C faithfulness — Tier1 키 필요 (ADR-003)
@@ -99,21 +100,21 @@ def build_monitor(note: str, *, enable_judge: bool, s5: bool) -> "PerformanceMon
 
 def make_agent(monitor, *, s5: bool = False):  # type: ignore[no-untyped-def]
     retriever = Retriever()
-    _gate_cd = dict(
+    _gate_cd = {
         # Gate C (S5)
-        graceful_degradation=GracefulDegradationConfig(quality_floor=0.3),
-        fault_tolerance=FaultToleranceConfig(),
-        idempotency=IdempotencyConfig(warn_on_non_idempotent=True),
+        "graceful_degradation": GracefulDegradationConfig(quality_floor=0.3),
+        "fault_tolerance": FaultToleranceConfig(),
+        "idempotency": IdempotencyConfig(warn_on_non_idempotent=True),
         # Gate D (S6)
-        efficiency=EfficiencyConfig(cost_unit="usd", target_cost_per_completion=0.01),
-        resource_budget=ResourceBudgetConfig(max_execution_time_ms=8000, max_tokens=4000),
-    ) if s5 else {}
+        "efficiency": EfficiencyConfig(cost_unit="usd", target_cost_per_completion=0.01),
+        "resource_budget": ResourceBudgetConfig(max_execution_time_ms=8000, max_tokens=4000),
+    } if s5 else {}
 
     # DESIGN §3 "켠다" — 단, GoalAlignmentConfig 는 비도구 에이전트라 제외
     # (gate2-review R1: use_llm_scoring 없이 켜면 상수 0.0).
     @agent_eval(
         monitor,
-        task_type="classification",
+        task_type="reasoning",  # 분류+우선순위 판정 = 추론 태스크 (채점은 score_fn)
         score_fn=score_classification,
         instructions=InstructionConfig(expected_format="json", fail_on_violation=False),
         subtask_tracking=SubtaskConfig(

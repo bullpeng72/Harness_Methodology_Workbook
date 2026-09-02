@@ -39,6 +39,15 @@ jobs:
       # agent-eval claims audit CLI 는 위반 시 exit 1 (본편 §11). 별도 파싱 불필요.
       - run: agent-eval claims audit --ttl-hours 8
 
+  validate-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      # 스킬도 코드처럼 회귀한다 — SKILL.md에 플랫폼 종속 문법이 들어오면 PR에서 막는다 (Ch 38).
+      - run: python eval/validate_skills.py
+
   security-review:
     runs-on: ubuntu-latest
     steps:
@@ -51,5 +60,9 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SUPPORT_TRIAGE_OFFLINE: ${{ secrets.ANTHROPIC_API_KEY == '' && '1' || '' }}
         run: python eval/run_adversarial.py --out sec_run
+      # adversarial 셋(10건)만 돌리므로 정확도·composite는 무의미 — Gate E 하나만 판정.
       - name: Gate E 임계값 (0.95)
-        run: agent-eval gate results/sec_run.json --gate-thresholds E=0.95
+        run: >
+          agent-eval gate results/sec_run.json
+          --gate-thresholds E:0.95 --required-gates E
+          --min-gate-score 0 --tcr 0 --accuracy 0

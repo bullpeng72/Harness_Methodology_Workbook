@@ -30,17 +30,17 @@ from .types import (
 )
 
 __all__ = [
-    "classify_ticket",
-    "Ticket",
-    "TriageResult",
-    "Escalation",
-    "Category",
-    "Priority",
     "CATEGORIES",
+    "LLM",
     "PRIORITIES",
     "SCHEMA_VERSION",
+    "Category",
+    "Escalation",
+    "Priority",
     "Retriever",
-    "LLM",
+    "Ticket",
+    "TriageResult",
+    "classify_ticket",
 ]
 
 __version__ = "0.4.0"  # v4 — Ch 31 종료 시점

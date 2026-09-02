@@ -32,7 +32,7 @@ confidence 는 분류 확신도다. 애매하면 낮춘다.
 class Classification:
     """분류기 출력 (파이프라인 내부 표현)."""
 
-    __slots__ = ("category", "priority", "confidence", "reasoning")
+    __slots__ = ("category", "confidence", "priority", "reasoning")
 
     def __init__(self, category: Category, priority: Priority, confidence: float, reasoning: str) -> None:
         self.category = category

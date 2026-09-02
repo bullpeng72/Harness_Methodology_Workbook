@@ -3,11 +3,9 @@
 
 _open := if os() == "macos" { "open" } else { "xdg-open" }
 
-# 도구 체인·모델 핀 점검
+# 도구 체인·모델 핀·데이터 재현 상태 점검 (Ch 3)
 doctor:
-    @python -c "import agent_evaluator, sys; print('agent_evaluator', agent_evaluator.__version__)"
-    @python -c "import pathlib; print('models.lock', 'OK' if pathlib.Path('models.lock').exists() else 'MISSING')"
-    @agent-eval --version || true
+    @python eval/doctor.py
 
 # 배치 평가 1회 → results/evaluation.{json,html}
 eval note="v0 규칙기반 기준선":
@@ -16,6 +14,10 @@ eval note="v0 규칙기반 기준선":
 # 골든셋 코어 18건만 (빠른 반복)
 eval-core note="v3-det-draft":
     SUPPORT_TRIAGE_OFFLINE=1 python eval/run_batch.py --golden data/golden --note "{{note}}" --out evaluation --s5 --limit 18
+
+# 골든셋 전체를 v0로 → results/v0_full.json (dataset build 소스, Ch 20.1)
+eval-all note="v0 full":
+    SUPPORT_TRIAGE_OFFLINE=1 python eval/run_batch.py --golden data/golden --note "{{note}}" --out v0_full
 
 # adversarial 셋 포함
 eval-adversarial:
@@ -41,6 +43,18 @@ report-baseline:
 # 버전별 확정 리포트 재생성 (results/final/v*.json → v*.html, 직전 버전 기준선)
 report-final:
     python eval/make_report.py --final
+
+# 두 라벨러의 불일치 목록 (S2 확정 로그)
+golden-diff:
+    @cat data/golden/_disagreements.md
+
+# 골든셋 3파일 파싱·건수 확인 (core18 / boundary6 / priority9)
+golden-finalize:
+    @python -c "import json,glob; [print(f.split('/')[-1], len(json.load(open(f)).get('cases',[])), 'cases') for f in sorted(glob.glob('data/golden/golden_*.json'))]"
+
+# skills/*/SKILL.md 크로스 플랫폼 검증 (WARN 0이어야 통과, Ch 38)
+validate-skills:
+    python eval/validate_skills.py
 
 test:
     SUPPORT_TRIAGE_OFFLINE=1 python -m pytest -q

@@ -1,0 +1,9 @@
+{
+  "gate_default": 0.85,
+  "gates": {
+    "E": 0.95
+  },
+  "tcr_pct": 85,
+  "accuracy_pct": 70,
+  "note": "SupportTriage SLO — kept in sync with docs/GATE_MAP.md"
+}

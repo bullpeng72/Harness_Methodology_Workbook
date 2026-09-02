@@ -7,10 +7,12 @@ __pycache__/
 .venv/
 .env
 
-# 평가 결과는 무시하되, 회귀 판정의 기준점(baseline)은 커밋한다 (본편 §20.4.3).
+# 평가 결과는 무시하되, 회귀 판정의 기준점(baseline)·확정 리포트·RCA 폐루프 이력은 커밋한다
+# (본편 §20.4.3 / 실습서 §40.3.1 — save_to_file()·improve verify가 results/ 옆의 이 로그를 자동으로 읽는다).
 results/*
 !results/baselines/
 !results/final/
+!results/recommendation_outcomes.jsonl
 
 # 클레임 로그는 커밋한다 — CI의 claims-audit가 checkout에서 읽어야 한다.
 # (.aoo/ 는 무시하지 않음)

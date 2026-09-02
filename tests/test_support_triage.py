@@ -13,10 +13,10 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 os.environ.setdefault("SUPPORT_TRIAGE_OFFLINE", "1")
 
-from support_triage import CATEGORIES, PRIORITIES, Ticket, classify_ticket  # noqa: E402
-from support_triage.escalation import account_unlock, refund  # noqa: E402
-from support_triage.sanitize import sanitize_ticket_text, scrub_pii  # noqa: E402
-from support_triage.types import CONFIDENCE_FLOOR  # noqa: E402
+from support_triage import CATEGORIES, PRIORITIES, Ticket, classify_ticket
+from support_triage.escalation import account_unlock, refund
+from support_triage.sanitize import sanitize_ticket_text, scrub_pii
+from support_triage.types import CONFIDENCE_FLOOR
 
 
 def _run(subject: str, body: str) -> object:

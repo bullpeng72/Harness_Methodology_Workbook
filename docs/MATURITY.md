@@ -20,15 +20,17 @@
 
 ## L4 거버넌스 🟡 부분
 - [x] RCA + 조치 검증 폐루프 — `diagnose`(S5) → 조치(S6) → `verify_recommendation_outcome`
-      **confirmed** (C·D 둘 다), `.aoo/recommendation_outcomes.jsonl` 기록 (S7)
+      **confirmed** (C·D 둘 다), `results/recommendation_outcomes.jsonl` 기록 (S7)
 - [x] 정직한 한계 문서 (`docs/LIMITS.md`, 5항목 실측 근거)
 - [ ] 성숙도 정기 추적 — 이번이 첫 측정, 분기별 계획 필요
-- [ ] 온보딩 자동화 — 스킬 미작성 (Part IX / S-later)
+- [x] 온보딩 스킬 3종 작성 (`skills/`, Part IX) — `support-triage-labeling` +
+      본편 스킬 도메인 래퍼 2개(`requirement-gate-map`·`gate-chapter-loop`).
+      정기화·신규 인원 실투입에 따른 리드타임 측정은 미완
 
 ## L5 조직 확장 ❌ 미해당
 - 팀 하나. 여러 팀 공통 기준은 논의 대상 아님.
 
 ## 현재 위치: **L3 완성 / L4 진입 중**
 
-L4를 완성하려면: 성숙도 분기별 추적 + 온보딩 스킬 + Gate 임계값의 팀 합의(현재 GATE_MAP은 박·유진).
+L4를 완성하려면: 성숙도 분기별 추적 + 온보딩 스킬 **정기화**(스킬 3종은 작성됨 — Part IX) + Gate 임계값의 팀 합의(현재 GATE_MAP은 박·유진).
 L2가 목표 규모에 맞는 하한 — 이 프로젝트는 L4가 적정.

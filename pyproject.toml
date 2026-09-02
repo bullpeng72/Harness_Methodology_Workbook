@@ -24,5 +24,10 @@ where = ["src"]
 line-length = 100
 target-version = "py310"
 
+[tool.ruff.lint.per-file-ignores]
+# 부트스트랩 스크립트: 동봉 저장소를 클론만 하고 `pip install -e` 없이 돌릴 수 있게
+# 로컬 패키지(src/, baseline/)를 sys.path 로 먼저 잡은 뒤 import 한다 (의도된 순서).
+"eval/*.py" = ["E402"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

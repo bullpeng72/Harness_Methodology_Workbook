@@ -1,0 +1,15 @@
+{
+  "label": "st-own-best",
+  "source": "this project's own measured version spine v0..v3 (results/final/, S8)",
+  "note": "Not an external benchmark — a self-reference distribution measuring 'where we are now vs. our own best run' (workbook Ch 41.3). The regressed segment (v1) is included; the frontier is each gate's best value.",
+  "tcr_pct": 50.0,
+  "accuracy_pct": [56.1, 75.8, 83.3, 83.3],
+  "gate_scores": {
+    "A": [0.526, 0.585, 0.605, 0.615],
+    "B": [1.0, 1.0, 1.0, 1.0],
+    "C": [0.20, 0.597, 0.757, 0.80],
+    "D": [0.0, 0.011, 0.570, 0.888],
+    "E": 1.0,
+    "G": [0.515, 0.515, 1.0, 1.0]
+  }
+}

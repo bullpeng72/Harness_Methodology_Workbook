@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 import urllib.request
+from contextlib import suppress
 from pathlib import Path
 from typing import Any
 
@@ -68,10 +69,9 @@ class LLM:
             return _offline_stub(system, user)
 
         if self.tier == "tier2" and self.model:
-            try:
+            # Ollama 실패 시 조용히 아래 Anthropic/폴백 경로로 넘어간다.
+            with suppress(Exception):
                 return self._ollama(system, user, max_tokens)
-            except Exception:  # noqa: BLE001 — 폴백 경로로 넘어간다
-                pass
 
         model = self.model if self.tier == "tier1" else self.fallback_model
         if model and os.getenv("ANTHROPIC_API_KEY"):
@@ -97,7 +97,7 @@ class LLM:
             data=json.dumps(payload).encode("utf-8"),
             headers={"Content-Type": "application/json"},
         )
-        with urllib.request.urlopen(req, timeout=60) as resp:  # noqa: S310 — 로컬 호스트
+        with urllib.request.urlopen(req, timeout=60) as resp:
             body: dict[str, Any] = json.loads(resp.read())
         return str(body.get("response", "")).strip()
 

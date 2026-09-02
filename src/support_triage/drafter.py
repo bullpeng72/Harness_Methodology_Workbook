@@ -27,7 +27,7 @@ _SYSTEM = """너는 고객 지원 답변 초안 작성기다.
 
 
 class Draft:
-    __slots__ = ("reply", "citations", "grounded")
+    __slots__ = ("citations", "grounded", "reply")
 
     def __init__(self, reply: str, citations: list[str], grounded: bool) -> None:
         self.reply = reply

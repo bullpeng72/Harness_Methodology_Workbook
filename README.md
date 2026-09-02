@@ -11,17 +11,18 @@
 
 ```
 docs/            방법론 산출물 — 실제로 생산된 파일 (서술이 아님)
-  ROLES.md · TRACKS.md · PROBLEM.md · SPEC.md · GATE_MAP.md · REUSE.md
-  IRREVERSIBLE.md · FAILURE_MODES.md(S2) · ITERATIONS.md(S3+) · MATURITY.md · LIMITS.md
+  ROLES.md · TEAM.md · TRACKS.md · PROBLEM.md · SPEC.md · GATE_MAP.md · REUSE.md
+  IRREVERSIBLE.md · FAILURE_MODES.md(S2) · ITERATIONS.md(S3+) · MATURITY.md · LIMITS.md · DEPLOY.md
+  SKILL_CANDIDATES.md · SKILL_DEPLOY.md(Part IX)
   gates/         HITL 관문 승인·반려 로그
-  observations/  저자(관찰자) 노트 — 워크북 챕터의 원자료
-src/support_triage/   트랙 M 에이전트 (v0→v5, 실제 커밋 이력)
+  (저자 관찰 S0–S8 원문은 저장소가 아니라 《하니스 메서드 실습서》 부록 J에 있다)
+src/support_triage/   트랙 M 에이전트 (v0→v1.0→v2→v3, 실제 커밋 이력)
 baseline/            트랙 C 대조군 (도현이 한 줄 프롬프트로. 수정 안 함)
-eval/run_batch.py    @agent_eval 배치 하네스
-data/  kb/ · tickets/ · golden/(2인 라벨) · adversarial/
-skills/             반복 절차 스킬 (Part IX)
-results/baselines/  회귀 게이트 기준점 — 커밋됨 (본편 §20.4.3)
-.aoo/claims.jsonl   팀 클레임 로그 — 커밋됨 (CI claims-audit가 읽음)
+eval/  run_batch.py(@agent_eval 배치) · run_adversarial.py · run_baseline.py · make_report.py · validate_skills.py
+data/  kb/ · tickets/ · golden/(2인 라벨, core18+boundary6+priority9) · adversarial/(injection6+pii4)
+skills/  support-triage-labeling(도메인) · requirement-gate-map · gate-chapter-loop (본편 스킬 도메인 래퍼, Part IX)
+results/  baselines/(회귀 기준점, 커밋됨 · 본편 §20.4.3) · final/(v0..v3 확정 리포트, 커밋됨) · recommendation_outcomes.jsonl(RCA 폐루프 이력, 커밋됨)
+.aoo/  claims.jsonl(팀 클레임 — CI claims-audit가 읽음) · targets.json(SLO) · experiments.jsonl · reference.json · improve/
 guardrail_profiles/runtime.json   에이전트 런타임용 가드레일 (dev 세션용과 분리, 본편 §8.4)
 .claude/.agent-evaluator/guardrail_config.json   dev 세션용 (편집·저작)
 models.lock         모델 + SDK 버전 고정 (재현 계약 · 본편 §34.4)
@@ -51,7 +52,8 @@ pip install -e ".[dev]" && python eval/run_batch.py  # 실제 Gate 측정
 - [x] S5 v2 — RAG(임베딩)·LLM 호출 축소, Gate C 0.20→0.60·G 0.52→1.0. `diagnose`가 C·D 공유원인(SLA) 지목. `ch27-end`
 - [x] S6 v3 — Drafter 결정적화(ADR-005), p95 12s→3.02s, Gate C 0.757 PASS·D warn. `current`=v3. `LIMITS.md`. `ch28-end`
 - [x] S7 — RCA 폐루프: `verify_recommendation_outcome` → C·D **confirmed**. `MATURITY.md`(L3/L4), `DEPLOY.md`. 제한 릴리스 `prod-20260828`
-- [x] S8 — 두 트랙 동일 채점: `eval/run_baseline.py` → 트랙 C category 38.9% / priority 0% / 인젝션 6/6 노출 / Gate 채점 불가. Part XI 9지표 표 완성(`docs/observations/S8.md`). `workbook-complete`
+- [x] S8 — 두 트랙 동일 채점: `eval/run_baseline.py` → 트랙 C category 38.9% / priority 0% / 인젝션 6/6 노출 / Gate 채점 불가. Part XI 9지표 표 완성(실습서 부록 J §J.S8). `workbook-complete`
+- [x] Part IX — 반복 절차 → 스킬 3종(`skills/`), `docs/SKILL_CANDIDATES.md` · `SKILL_DEPLOY.md`, `just validate-skills` + CI 잡
 
 > **실측 원칙** (본편 §2⑦): `docs/ITERATIONS.md`의 수치는 전부 실제 `agent-eval` 실행 결과다.
 > 오프라인 스텁 모드라 절대 정확도는 실모델에서 재측정하지만, Gate 통과 여부·회귀 방향·

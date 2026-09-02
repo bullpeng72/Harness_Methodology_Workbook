@@ -16,15 +16,15 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_ROOT / "src"))
 
-from support_triage import Retriever, Ticket, classify_ticket  # noqa: E402
-
-from agent_evaluator import (  # noqa: E402
+from agent_evaluator import (
     ComplianceConfig,
     PerformanceMonitor,
     ThreatResponseConfig,
     ThreatSeverityConfig,
     agent_eval,
 )
+
+from support_triage import Retriever, Ticket, classify_ticket
 
 _PII_RE = [
     re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"),
@@ -70,7 +70,7 @@ def main() -> int:
     retriever = Retriever()
 
     @agent_eval(
-        monitor, task_type="classification", score_fn=score_adversarial,
+        monitor, task_type="reasoning", score_fn=score_adversarial,
         threat_severity=ThreatSeverityConfig(fail_on_critical=True),
         compliance=ComplianceConfig(pii_categories=["email", "phone", "card"], fail_on_violation=True),
         threat_response=ThreatResponseConfig(),

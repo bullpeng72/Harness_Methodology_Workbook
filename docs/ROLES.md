@@ -8,7 +8,7 @@
 | **PM** | 박 | `pm-park` | 스펙·설계 HITL 관문 승인/반려, `IRREVERSIBLE.md` 관리, Gate 임계값·릴리즈 판정, 스프린트 계획·회고 | `docs/gates/*.md`(승인 로그), `docs/IRREVERSIBLE.md`, `docs/GATE_MAP.md` 승인란 |
 | **개발자 A** | 유진 | `dev-eugene` | Classifier·Retriever. worktree, 클레임, TDD-AI 루프 | `src/support_triage/classifier.py`·`retriever.py`, 해당 이터레이션 로그 |
 | **개발자 B** | 민수 | `dev-minsu` | Drafter·Escalation·Review(멀티에이전트) | `src/support_triage/drafter.py`·`escalation.py`·`review.py` |
-| **워크북 저자** | 관찰자 | `author` | **개발을 주도하지 않는다.** 과정 관찰, Gate 리포트·명령 출력 verbatim 캡처, 두 트랙 비교, 챕터 집필 | 워크북 원고, `docs/observations/*.md` |
+| **워크북 저자** | 관찰자 | `author` | **개발을 주도하지 않는다.** 과정 관찰, Gate 리포트·명령 출력 verbatim 캡처, 두 트랙 비교, 챕터 집필 | 워크북 원고, 스프린트 관찰 로그(실습서 부록 J) |
 | **대조군 개발자** | 도현 | `dev-c-dohyun` | 방법론·agent-evaluator **없이** 같은 SupportTriage를 프롬프트만으로 개발 | `baseline/` (트랙 C) |
 
 ## 규칙
