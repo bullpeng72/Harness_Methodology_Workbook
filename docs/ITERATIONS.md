@@ -2,7 +2,7 @@
 
 실측만 기록한다 (본편 §2⑦). 예시 수치 금지.
 데이터: `results/baselines/<version>.json`(커밋됨), 전체 리포트 `results/final/<version>.json`.
-채점: 골든셋 33건(core18+boundary6+priority9), SDK lib 1.0.0rc3 / CLI 1.0.0rc2, `SUPPORT_TRIAGE_OFFLINE=1`.
+채점: 골든셋 33건(core18+boundary6+priority9), SDK lib 1.0.0 / CLI 1.0.0 (`models.lock`, S8 정렬), `SUPPORT_TRIAGE_OFFLINE=1`.
 
 > ⚠ **오프라인 스텁 모드** — Classifier/Drafter가 실제 LLM이 아니라 키워드 규칙 스텁이다.
 > 절대 정확도는 실모델(`models.lock` tier2)에서 재측정하며, 트랙 간 비교(Part XI)와
