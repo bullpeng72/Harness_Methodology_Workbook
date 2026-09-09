@@ -9,6 +9,12 @@
 #         --requirements docs/REQUIREMENTS.txt --require-spec-coverage
 #   → 선언한 케이스가 하나도 없는 ST-ID 가 있으면 exit 4  (실습서 Ch 7·23·35)
 #   spec_run.json 은 골든셋 + adversarial(injection/pii) 을 한 번에 돌린 결과 — ST-006/007 까지 포함.
+#
+# 커버리지 대상에서 의도적으로 제외한 SPEC 요구사항 (docs/SPEC.md 에는 남아 있음):
+#   ST-009 (리뷰어 역할·집계) — Gate F 는 이 재현에서 채점 경로 미연결(n/a, docs/LIMITS.md L4).
+#                               잴 골든 케이스를 만들 수 없으므로 넣으면 항상 exit 4.
+#   ST-101 (반복 실행 비용이 Tier 1 요금에 비례하지 않을 것) — 태스크별 지표가 아니라
+#                               models.lock 의 tier2 핀으로 구조적으로 충족(검증: just doctor + IRREVERSIBLE 등재).
 
 ST-001: 티켓을 카테고리 6종 중 하나로 분류한다
 ST-002: 티켓에 우선순위(P1/P2/P3)를 규칙대로 부여한다 (결제실패·중단·보안=P1 / 기능오류·계정=P2 / 사용법·기타=P3)
