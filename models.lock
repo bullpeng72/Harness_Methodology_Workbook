@@ -11,5 +11,10 @@ seed: 7
 # 도구 (본편 §34.4: 착수 시 버전 고정, 업그레이드는 별도 마이그레이션)
 # S3 관찰(실습서 부록 J §J.S3): import되는 lib 와 `agent-eval` CLI 가 rc2/rc3로 갈라져
 # 있었으나 S8에서 1.0.0 정식으로 정렬. lib·CLI 동일 버전(재현 기준).
-agent_evaluator_lib: 1.0.0
-agent_evaluator_cli: 1.0.0
+#
+# post-S8 마이그레이션 (v1.0.5): SPEC-042(하네스 정합)·043(개발 지원)·044(HTML 리포트)
+# 반영. 전부 옵트인이라 기본 채점 경로는 불변 — v0~v3 실측 표(docs/ITERATIONS.md ·
+# 실습서 부록 C)의 Gate 값·회귀 방향은 그대로 재현된다. HTML 리포트만 3계층
+# (판정/이터레이션/증거) 레이아웃으로 재생성됨. IRREVERSIBLE 변경 이력 참고.
+agent_evaluator_lib: 1.0.5
+agent_evaluator_cli: 1.0.5

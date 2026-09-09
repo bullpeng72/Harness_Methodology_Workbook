@@ -1,0 +1,2 @@
+{"kind": "gate_run", "id": "0d36c6358d88", "recorded_at": "2026-09-09T14:50:26.184147+00:00", "result_file": "results/final/v3.json", "agent_version": "e7c11c35-dirty-5c92a8", "exit_code": 1, "verdict_level": null, "decision_ready": null, "gate_scores": {"A": 0.6049, "B": 1.0, "C": 0.7567, "D": 0.5699, "E": 1.0, "F": null, "G": 1.0, "overall": 0.8219}}
+{"kind": "outcome", "gate_run_id": "0d36c6358d88", "recorded_at": "2026-09-09T14:50:26.265871+00:00", "outcome": "accepted", "decided_by": "support-lead", "rationale": "제한 릴리스 — 알려진 TCR gap 은 실데이터 재라벨로 추적 (LIMITS L2)"}

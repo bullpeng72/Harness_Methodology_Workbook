@@ -49,8 +49,13 @@ _CATS = ("billing", "bug", "how-to", "account", "abuse", "other")
 _PRIOS = ("P1", "P2", "P3")
 
 
-def load_golden(golden_dir: Path) -> list[dict]:
-    """golden_core/boundary/priority + adversarial 를 하나의 케이스 리스트로."""
+def load_golden(golden_dir: Path, *, include_adversarial: bool = False) -> list[dict]:
+    """golden_core/boundary/priority (+ 옵션: adversarial) 를 하나의 케이스 리스트로.
+
+    각 케이스의 ``covers`` / ``acceptance_criteria`` 를 그대로 실어 보낸다 —
+    ``main()`` 이 ``attach_spec_coverage()`` 로 이걸 ``TaskResult.extra`` 에 넣어
+    ``insights.spec_coverage`` / ``gate --require-spec-coverage`` (Ch 7·23) 가 읽는다.
+    """
     cases: list[dict] = []
     for name in ("golden_core.json", "golden_boundary.json", "golden_priority.json"):
         p = golden_dir / name
@@ -60,6 +65,27 @@ def load_golden(golden_dir: Path) -> list[dict]:
                     "ticket_id": c["ticket_id"], "subject": c.get("subject", ""),
                     "body": c.get("body", ""),
                     "gt_category": c["category"], "gt_priority": c["priority"],
+                    "covers": c.get("covers", []),
+                    "acceptance_criteria": c.get("acceptance_criteria", []),
+                })
+    if include_adversarial:
+        adv_dir = golden_dir.parent / "adversarial"
+        for name in ("injection.jsonl", "pii.jsonl"):
+            p = adv_dir / name
+            if not p.exists():
+                continue
+            for line in p.read_text(encoding="utf-8").splitlines():
+                if not line.strip():
+                    continue
+                c = json.loads(line)
+                exp = c.get("expected", {})
+                cases.append({
+                    "ticket_id": c["ticket_id"], "subject": c.get("subject", ""),
+                    "body": c.get("body", ""),
+                    "gt_category": exp.get("category", "abuse"),
+                    "gt_priority": exp.get("priority", "P3"),
+                    "covers": c.get("covers", []),
+                    "acceptance_criteria": c.get("acceptance_criteria", []),
                 })
     return cases
 
@@ -96,6 +122,30 @@ def build_monitor(note: str, *, enable_judge: bool, s5: bool) -> PerformanceMoni
             CostPredictabilityConfig(max_coefficient_of_variation=0.4) if s5 else None
         ),
     )
+
+
+def attach_spec_coverage(monitor, spec_by_ticket: dict) -> None:
+    """기록된 TaskResult 마다 골든 케이스의 covers / acceptance_criteria 를 extra 에 채운다.
+
+    ``insights.spec_coverage`` / ``gate --require-spec-coverage`` (Ch 7·23) 가 읽는 키다.
+    ``save_to_file()`` 직전에 ``monitor.tasks`` 를 직접 손본다 — TaskResult 는 frozen
+    dataclass 지만 ``extra`` 는 가변 dict 라 in-place 로 넣을 수 있다.
+    """
+    for t in getattr(monitor, "tasks", []) or []:
+        try:
+            tid = json.loads(getattr(t, "question", "") or "{}").get("ticket_id")
+        except (ValueError, TypeError):
+            continue
+        spec = spec_by_ticket.get(tid)
+        if not spec:
+            continue
+        extra = getattr(t, "extra", None)
+        if not isinstance(extra, dict):
+            continue
+        if spec.get("covers"):
+            extra["covers"] = list(spec["covers"])
+        if spec.get("acceptance_criteria"):
+            extra["acceptance_criteria"] = list(spec["acceptance_criteria"])
 
 
 def make_agent(monitor, *, s5: bool = False):  # type: ignore[no-untyped-def]
@@ -154,11 +204,18 @@ def main() -> int:
     ap.add_argument("--judge", action="store_true", help="Gate C LLMJudge 켜기 (Tier1 키 필요)")
     ap.add_argument("--s5", action="store_true", help="Gate C 정면돌파 Config (환각·강등·내결함성)")
     ap.add_argument("--limit", type=int, default=0, help="케이스 수 제한 (빠른 반복용)")
+    ap.add_argument("--include-adversarial", action="store_true",
+                    help="injection/pii 셋도 포함 — 요구사항 커버리지(ST-006·007)까지 한 결과에 (Ch 7·23)")
     args = ap.parse_args()
 
-    cases = load_golden(Path(args.golden))
+    cases = load_golden(Path(args.golden), include_adversarial=args.include_adversarial)
     if args.limit:
         cases = cases[: args.limit]
+    spec_by_ticket = {
+        c["ticket_id"]: {"covers": c.get("covers", []),
+                         "acceptance_criteria": c.get("acceptance_criteria", [])}
+        for c in cases
+    }
     monitor = build_monitor(args.note, enable_judge=args.judge, s5=args.s5)
     agent = make_agent(monitor, s5=args.s5)
 
@@ -169,6 +226,7 @@ def main() -> int:
         )
         agent(q, ground_truth=f"{c['gt_category']} {c['gt_priority']}")
 
+    attach_spec_coverage(monitor, spec_by_ticket)
     monitor.save_to_file(args.out)
     print(f"wrote results/{args.out}.json  (agent_version={monitor.agent_version}, n={len(cases)})")
     return 0

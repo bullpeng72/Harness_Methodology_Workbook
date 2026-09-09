@@ -1,15 +1,11 @@
 {
-  "_meta": {
-    "purpose": "경계 케이스 — how-to↔bug, billing↔account. 전체 정확도를 흐리지 않게 별도 파일.",
-    "count": 6,
-    "rule": "how-to = 절차를 묻는다 / bug = 재현되는데 실패. 결제 관련이면 billing 우선."
-  },
+  "_meta": {"purpose": "경계 케이스 — how-to↔bug, billing↔account. 전체 정확도를 흐리지 않게 별도 파일.", "count": 6, "rule": "how-to = 절차를 묻는다 / bug = 재현되는데 실패. 결제 관련이면 billing 우선."},
   "cases": [
-    {"ticket_id": "B-001", "subject": "리포트 필터가 이상해요", "body": "날짜 필터를 걸면 아무 결과도 안 나옵니다. 이게 원래 이렇게 쓰는 게 맞나요, 아니면 버그인가요?", "category": "bug", "priority": "P3", "escalate": null, "note": "재현되는 오작동 서술 → bug (유진·민수 2차 토론에서 확정)"},
-    {"ticket_id": "B-002", "subject": "API 페이지네이션 방법", "body": "다음 페이지를 가져오는 파라미터가 문서에 안 보입니다. 어떻게 하나요?", "category": "how-to", "priority": "P3", "escalate": null},
-    {"ticket_id": "B-003", "subject": "결제수단을 카드에서 계좌로", "body": "계정의 결제 수단을 신용카드에서 계좌 자동이체로 바꾸고 싶습니다.", "category": "billing", "priority": "P3", "escalate": null, "note": "결제 관련 → account 아니라 billing"},
-    {"ticket_id": "B-004", "subject": "요금제 변경했는데 반영이 안 돼요", "body": "어제 Pro로 업그레이드했는데 여전히 Free 제한이 걸립니다. 재현됩니다.", "category": "bug", "priority": "P2", "escalate": null, "note": "billing 문맥이지만 '재현되는 미반영' → bug"},
-    {"ticket_id": "B-005", "subject": "초대 메일이 안 와요", "body": "팀원 초대를 눌렀는데 상대가 메일을 못 받습니다. 스팸함도 확인했답니다.", "category": "bug", "priority": "P2", "escalate": null},
-    {"ticket_id": "B-006", "subject": "대시보드 숫자가 문서와 달라요", "body": "API 응답의 total과 대시보드 표시가 다릅니다. 어느 게 맞나요?", "category": "bug", "priority": "P3", "escalate": null}
+    {"ticket_id": "B-001", "subject": "리포트 필터가 이상해요", "body": "날짜 필터를 걸면 아무 결과도 안 나옵니다. 이게 원래 이렇게 쓰는 게 맞나요, 아니면 버그인가요?", "category": "bug", "priority": "P3", "escalate": null, "note": "재현되는 오작동 서술 → bug (유진·민수 2차 토론에서 확정)", "covers": ["ST-001", "ST-002", "ST-100", "ST-005"]},
+    {"ticket_id": "B-002", "subject": "API 페이지네이션 방법", "body": "다음 페이지를 가져오는 파라미터가 문서에 안 보입니다. 어떻게 하나요?", "category": "how-to", "priority": "P3", "escalate": null, "covers": ["ST-001", "ST-002", "ST-100", "ST-004"]},
+    {"ticket_id": "B-003", "subject": "결제수단을 카드에서 계좌로", "body": "계정의 결제 수단을 신용카드에서 계좌 자동이체로 바꾸고 싶습니다.", "category": "billing", "priority": "P3", "escalate": null, "note": "결제 관련 → account 아니라 billing", "covers": ["ST-001", "ST-002", "ST-100"]},
+    {"ticket_id": "B-004", "subject": "요금제 변경했는데 반영이 안 돼요", "body": "어제 Pro로 업그레이드했는데 여전히 Free 제한이 걸립니다. 재현됩니다.", "category": "bug", "priority": "P2", "escalate": null, "note": "billing 문맥이지만 '재현되는 미반영' → bug", "covers": ["ST-001", "ST-002", "ST-100"]},
+    {"ticket_id": "B-005", "subject": "초대 메일이 안 와요", "body": "팀원 초대를 눌렀는데 상대가 메일을 못 받습니다. 스팸함도 확인했답니다.", "category": "bug", "priority": "P2", "escalate": null, "covers": ["ST-001", "ST-002", "ST-100"]},
+    {"ticket_id": "B-006", "subject": "대시보드 숫자가 문서와 달라요", "body": "API 응답의 total과 대시보드 표시가 다릅니다. 어느 게 맞나요?", "category": "bug", "priority": "P3", "escalate": null, "covers": ["ST-001", "ST-002", "ST-100", "ST-005"]}
   ]
 }

@@ -7,6 +7,8 @@
   "live_loop_window": 10,
   "live_loop_blocking_types": ["consecutive_repeat"],
   "circuit_breaker_after": 3,
+  "circuit_breaker_recover_after": 6,
+  "human_only_patterns": ["prod deploy", "terraform apply", "alembic upgrade"],
   "scope": {
     "forbidden_tools": ["refund", "account_unlock"],
     "max_tool_calls": 6,

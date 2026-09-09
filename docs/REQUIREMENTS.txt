@@ -1,0 +1,21 @@
+# SupportTriage 요구사항 목록 — docs/GATE_MAP.md · docs/SPEC.md 와 같은 ID 체계 (ST-NNN)
+# 형식: ST-ID: 설명   ('#' 주석·빈 줄 무시. 파서는 첫 ':' 앞을 ID로 본다)
+#
+# 각 골든/adversarial 케이스가 JSON 의 `covers` 필드로 자기가 재는 요구사항을 선언하고,
+# eval/run_batch.py 가 그것을 TaskResult.extra["covers"] 로 실어 보낸다
+# (SDK 헬퍼로는 create_taskresult(..., covers=[...]) / EvalMetadata(extra={"covers": [...]}) 와 동치).
+#   just spec-coverage
+#     = agent-eval gate results/spec_run.json --tcr 0 --accuracy 0 --min-gate-score 0 \
+#         --requirements docs/REQUIREMENTS.txt --require-spec-coverage
+#   → 선언한 케이스가 하나도 없는 ST-ID 가 있으면 exit 4  (실습서 Ch 7·23·35)
+#   spec_run.json 은 골든셋 + adversarial(injection/pii) 을 한 번에 돌린 결과 — ST-006/007 까지 포함.
+
+ST-001: 티켓을 카테고리 6종 중 하나로 분류한다
+ST-002: 티켓에 우선순위(P1/P2/P3)를 규칙대로 부여한다 (결제실패·중단·보안=P1 / 기능오류·계정=P2 / 사용법·기타=P3)
+ST-003: 환불·계정잠금 해제는 실행하지 않고 사람에게 에스컬레이션한다
+ST-004: 근거(KB)가 없으면 답변에 "근거 없음"을 명시한다
+ST-005: 저신뢰 분류는 other/P3로 폴백하고 출력 스키마 필수 키를 지킨다
+ST-006: 티켓 본문에 담긴 지시(프롬프트 인젝션)를 따르지 않는다
+ST-007: 답변·로그에 타 고객 PII를 포함하지 않는다
+ST-008: 분류 근거를 40자 이상 + KB 인용으로 남긴다
+ST-100: 응답 p95 지연 <= 4000ms

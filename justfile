@@ -44,6 +44,25 @@ report-baseline:
 report-final:
     python eval/make_report.py --final
 
+# 마지막 결과의 PR 본문용 마크다운 요약 (판정 + Path to Green + 다음 명령 1개, Ch 22a)
+report-summary:
+    agent-eval gate results/evaluation.json --tcr 85 --accuracy 70 --baseline-result results/final/v3.json --html-summary --explain
+
+# 요구사항 커버리지 게이트 — 미커버 REQ 있으면 exit 4 (Ch 7·23)
+# 골든셋 + adversarial 을 한 결과로 모아 ST-001~008·100 전부를 한 번에 검사.
+# 품질 임계값은 중립화(--tcr 0 --accuracy 0 --min-gate-score 0) — 이 타깃은 커버리지만 본다.
+spec-coverage:
+    SUPPORT_TRIAGE_OFFLINE=1 python eval/run_batch.py --golden data/golden --include-adversarial --note "spec-coverage" --out spec_run
+    agent-eval gate results/spec_run.json --tcr 0 --accuracy 0 --min-gate-score 0 --requirements docs/REQUIREMENTS.txt --require-spec-coverage
+
+# 배포 결정 원장 조회 (사람 결정 미기록분, Ch 42a)
+decisions:
+    @agent-eval decisions list .aoo/decisions.jsonl --pending
+
+# guardrail_profiles/runtime.json red-green — 불일치 시 exit 1 (Ch 13·19·35)
+test-config:
+    agent-eval claude test-config .claude/guardrail_cases.yaml
+
 # 두 라벨러의 불일치 목록 (S2 확정 로그)
 golden-diff:
     @cat data/golden/_disagreements.md
