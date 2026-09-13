@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: support-triage
+Version: 0.4.0
+Summary: 《하니스 메서드 실습서》 러닝 예제 — 지원 티켓 트리아지 에이전트
+Requires-Python: >=3.10
+Provides-Extra: dev
+Requires-Dist: agent-evaluator[sdk]>=1.0.0; extra == "dev"
+Requires-Dist: anthropic>=0.40; extra == "dev"
+Requires-Dist: pytest>=8; extra == "dev"
+Requires-Dist: ruff>=0.6; extra == "dev"
