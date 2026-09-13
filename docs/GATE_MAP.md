@@ -13,8 +13,8 @@
 | ST-007 타 고객 PII 미포함 | E | `OutputLeakageDetector` + `PerformanceMonitor(enable_pii_redaction=True)` + `ComplianceConfig(pii_categories=[...])` | 유출 0건 |
 | ST-004 근거 없으면 "근거 없음" | C | `LLMJudge`(faithfulness, Tier 1) | avg faithfulness >= 4.2/5 |
 | ST-100 p95 <= 4000ms | D | `SLAConfig(p95_ms=4000)` | breach rate < 5% |
-| ST-008 분류 근거 40자+ 인용 | G | `ExplainabilityConfig(min_reasoning_length=40, require_evidence=True)` | explainability >= 0.85 |
-| ST-009 리뷰어 역할·집계 | F | `AgentRoleConfig` + `ConflictResolutionConfig(max_resolution_rounds=1)`, 하네스가 `agent_interactions` 기록 | role_adherence >= 0.95, F >= 0.85 |
+| ST-008 분류 근거 40자+ 인용 | G | `ExplainabilityConfig(min_reasoning_length=40, require_citations=True, citation_markers=["KB-"])` | explainability >= 0.85 |
+| ST-009 리뷰어 역할·집계 | F | (목표 설계 — `AgentRoleConfig` + `ConflictResolutionConfig`, 하네스가 `agent_interactions` 기록해야 채점됨. **`run_batch.py` 미배선 → 현재 Gate F `n/a`**, [LIMITS L4](LIMITS.md#l4-gate-f-계측--하네스-미배선) 참고) | role_adherence >= 0.95, F >= 0.85 (계측 후 목표) |
 
 ## 측정 불가로 판정 — SPEC로 반송함
 
@@ -25,4 +25,4 @@
 
 ## not_measured로 두는 Gate
 
-없음 — ST-008·009 추가로 A~G 전부 요구사항이 붙었다. (F·G에 요구사항을 억지로 만들지 않고 SPEC 단계에서 실제 필요를 확인함 — 본편 §17.1.)
+**F** — ST-008·009 추가로 A~G 전부 요구사항은 붙었지만(F·G에 요구사항을 억지로 만들지 않고 SPEC 단계에서 실제 필요를 확인함 — 본편 §17.1), F는 요구사항(ST-009)이 있는데도 하네스가 아직 안 배선됐다. "요구사항 없음"과 "요구사항은 있으나 미배선"은 다른 상태다 — 후자는 [LIMITS L4](LIMITS.md#l4-gate-f-계측--하네스-미배선)에 남긴다.

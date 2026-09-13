@@ -2,7 +2,7 @@
 
 작성: 유진·민수.  본편 원칙 4 — 검색하지 않은 확신은 기술부채.
 
-검색한 곳: `agent_evaluator` 설치본(`pip show agent-evaluator` → 소스), 팀 스킬 디렉토리(없음 — 신규 프로젝트), `search_violations`(이력 없음 — 신규).
+검색한 곳: `agent_evaluator` 설치본(`pip show agent-evaluator` → 소스), 팀 스킬 디렉토리(없음 — 신규 프로젝트), `list_violations`(검색어 없이 훑기, 이력 없음 — 신규).
 
 | 필요한 것 | 새로 만들지 않고 | 근거 |
 |---|---|---|
@@ -14,7 +14,7 @@
 | 실시간 위험 차단 | `LiveGuardrail` (runtime 프로파일) | 두 폐루프의 실시간 쪽 |
 | 버전 비교 | `agent-eval abtest` / `--baseline-version` / `trend` | SDK CLI |
 | RCA | `agent-eval diagnose` / `verify_recommendation_outcome` | SDK `rca/` |
-| 멀티에이전트 조율 채점 | `AgentRoleConfig` / `ConsensusConfig` / `ConflictResolutionConfig` | Gate F 표준 |
+| 멀티에이전트 조율 채점 | `AgentRoleConfig` / `ConsensusConfig` / `ConflictResolutionConfig` | Gate F 표준 — ST-009는 목표 설계일 뿐 아직 `run_batch.py`에 연결 안 함, Gate F는 현재 `n/a`([GATE_MAP.md](GATE_MAP.md)·[LIMITS L4](LIMITS.md#l4-gate-f-계측--하네스-미배선)) |
 
 ## 새로 만드는 것 (최소)
 

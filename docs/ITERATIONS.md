@@ -2,20 +2,20 @@
 
 실측만 기록한다 (본편 §2⑦). 예시 수치 금지.
 데이터: `results/baselines/<version>.json`(커밋됨), 전체 리포트 `results/final/<version>.json`.
-채점: 골든셋 33건(core18+boundary6+priority9), SDK lib 1.0.5 / CLI 1.0.5 (`models.lock`, S8 정렬 후 post-S8 마이그레이션), `SUPPORT_TRIAGE_OFFLINE=1`.
+채점: 골든셋 33건(core18+boundary6+priority9), SDK lib 1.1.0 / CLI 1.1.0 (`models.lock`, S8 정렬 후 순차 마이그레이션), `SUPPORT_TRIAGE_OFFLINE=1`.
 
 > ⚠ **오프라인 스텁 모드** — Classifier/Drafter가 실제 LLM이 아니라 키워드 규칙 스텁이다.
 > 절대 정확도는 실모델(`models.lock` tier2)에서 재측정하며, 트랙 간 비교(Part XI)와
 > Gate 통과 여부·회귀 방향은 이 모드에서도 유효하다.
 
-> ℹ **post-S8 마이그레이션 (v1.0.0 → v1.0.5)** — SPEC-042(하네스 정합)·043(개발 지원)·044
-> (HTML 리포트)를 반영했다. 전부 옵트인이라 기본 채점 경로는 불변 — 아래 v0~v3 표의 Gate
-> 값·회귀 방향은 그대로다(옵트인 기능을 켜지 않는 한). 결과 JSON에 새 `insights` 키가
-> 추가되고, `results/final/v*.html`은 3계층(판정 / 이터레이션 / 증거) 레이아웃으로
-> 재생성됐다(`eval/make_report.py --final`). 아래 실측값은 v1.0.0 시점 real-Ollama
-> 스냅샷이며, LLM 비결정성 탓에 재실행 시 소수점은 달라진다 — 이 표는 **방향의 정본**이다
-> (본편 §20.2). 스프린트 태그 `ch16-end`~`ch28-end`의 `results/`는 v1.0.0 측정본으로
-> 동결돼 있다.
+> ℹ **순차 마이그레이션 (v1.0.0 → v1.0.5 → v1.1.0)** — 하네스 정합 강화·개발 지원 확장·HTML
+> 리포트 재구조화(1.0.5)에 이어 LiveGuardrail 발견성·내구성 강화(1.1.0)를 반영했다. 전부
+> 옵트인이라 기본 채점 경로는 불변 — 아래 v0~v3 표의 Gate 값·회귀 방향은 그대로다(옵트인
+> 기능을 켜지 않는 한). 결과 JSON에 새 `insights` 키가 추가되고, `results/final/v*.html`은
+> 3계층(판정 / 이터레이션 / 증거) 레이아웃으로 재생성됐다(`eval/make_report.py --final`).
+> 아래 실측값은 v1.0.0 시점 real-Ollama 스냅샷이며, LLM 비결정성 탓에 재실행 시 소수점은
+> 달라진다 — 이 표는 **방향의 정본**이다(본편 §20.2). 스프린트 태그 `ch16-end`~`ch28-end`의
+> `results/`는 v1.0.0 측정본으로 동결돼 있다.
 
 | version | prompt_version | 무엇을 바꿈 | golden acc | TCR | Gate A/C/D | gate 결과 | abtest(acc) vs 직전 |
 |---|---|---|---|---|---|---|---|

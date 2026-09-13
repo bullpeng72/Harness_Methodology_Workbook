@@ -12,9 +12,17 @@ seed: 7
 # S3 관찰(실습서 부록 J §J.S3): import되는 lib 와 `agent-eval` CLI 가 rc2/rc3로 갈라져
 # 있었으나 S8에서 1.0.0 정식으로 정렬. lib·CLI 동일 버전(재현 기준).
 #
-# post-S8 마이그레이션 (v1.0.5): SPEC-042(하네스 정합)·043(개발 지원)·044(HTML 리포트)
+# post-S8 마이그레이션 (v1.0.5): 하네스 정합 강화·개발 지원 확장·HTML 리포트 재구조화
 # 반영. 전부 옵트인이라 기본 채점 경로는 불변 — v0~v3 실측 표(docs/ITERATIONS.md ·
 # 실습서 부록 C)의 Gate 값·회귀 방향은 그대로 재현된다. HTML 리포트만 3계층
 # (판정/이터레이션/증거) 레이아웃으로 재생성됨. IRREVERSIBLE 변경 이력 참고.
-agent_evaluator_lib: 1.0.5
-agent_evaluator_cli: 1.0.5
+#
+# 마이그레이션 (v1.1.0): LiveGuardrail 발견성·내구성 강화 반영. 이번에도
+# 전부 옵트인 — v0~v3 실측 표는 실측 재확인 완료(A/B/C/D/E/G = 0.526/PASS/0.80/0.886/
+# 1.0/0.515, F는 n/a, 전부 소수점까지 동일). 새로 생긴 건 발견성·알림 계층뿐:
+# `list_violations`(검색어 없이 훑기)·`on_block`/`webhook_on_block`(차단 즉시 알림,
+# 기본 꺼짐)·`blocked_attempt_capture.max_chars` 240→500 + `report_max_chars`(옵트인).
+# 실습서 부록 B·L, Ch 10·19 갱신. `tests/test_runtime_guardrail.py` 신설 —
+# `guardrail_profiles/runtime.json`이 실제로 차단하는지 처음으로 코드로 검증.
+agent_evaluator_lib: 1.1.0
+agent_evaluator_cli: 1.1.0
